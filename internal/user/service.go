@@ -5,7 +5,7 @@ import "context"
 type storage interface {
 	InsertUser(ctx context.Context, user *User) (string, error)
 	FindUser(ctx context.Context, id string) (*User, error)
-	InsertTransaction(ctx context.Context, ur *UserRequest) error
+	InsertTransaction(ctx context.Context, trr *TransactionRequest) error
 }
 
 type Service struct {
@@ -17,14 +17,25 @@ func NewService(storage storage) *Service {
 }
 
 func (s *Service) CreateUser(ctx context.Context, user *User) (string, error) {
-	return "", nil
+	userID, err := s.storage.InsertUser(ctx, user)
+	if err != nil {
+		return "", err
+	}
+	return userID, nil
 }
 
 func (s *Service) GetUserByID(ctx context.Context, id string) (*User, error) {
-	return nil, nil
+	user, err := s.storage.FindUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
-func (s *Service) MakeTransaction(ctx context.Context, ur *UserRequest) error {
-
+func (s *Service) MakeTransaction(ctx context.Context, trr *TransactionRequest) error {
+	err := s.storage.InsertTransaction(ctx, trr)
+	if err != nil {
+		return err
+	}
 	return nil
 }

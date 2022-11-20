@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users (id) NOT NULL,
     tr_type transaction_type NOT NULL,
-    tr_status transaction_status NOT NULL,
+    tr_status transaction_status NOT NULL DEFAULT 'open',
     amount INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
