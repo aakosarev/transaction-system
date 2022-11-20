@@ -18,7 +18,7 @@ func NewStorage(client postgresql.Client) *Storage {
 
 func (s *Storage) InsertUser(ctx context.Context, user *User) (string, error) {
 	query := `INSERT INTO users (name) VALUES ($1) RETURNING id`
-	err := s.client.QueryRow(ctx, query, user.ID).Scan(&user.ID)
+	err := s.client.QueryRow(ctx, query, user.Name).Scan(&user.ID)
 	if err != nil {
 		return "", err
 	}
@@ -29,6 +29,7 @@ func (s *Storage) FindUser(ctx context.Context, id string) (*User, error) {
 	var user User
 	query := `SELECT * FROM users WHERE id = $1`
 	err := s.client.QueryRow(ctx, query, id).Scan(&user.ID, &user.Name, &user.Balance)
+
 	if err != nil {
 		return nil, errors.New("user not found")
 	}

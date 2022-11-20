@@ -26,7 +26,7 @@ var once sync.Once
 func GetConfig() *Config {
 	once.Do(func() {
 		instance = &Config{}
-		if err := cleanenv.ReadConfig("config.yml", instance); err != nil {
+		if err := cleanenv.ReadConfig("config.yaml", instance); err != nil {
 			log.Fatal(err)
 		}
 	})

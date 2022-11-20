@@ -29,7 +29,7 @@ func NewHandler(service service) *Handler {
 
 func (h *Handler) Register(router *httprouter.Router) {
 	router.HandlerFunc(http.MethodPost, "/user/new", h.CreateUser)
-	router.HandlerFunc(http.MethodGet, "/user/:uuid", h.GetUserByID)
+	router.GET("/user/:uuid", h.GetUserByID)
 	router.HandlerFunc(http.MethodPost, "/user/transaction", h.MakeTransaction)
 }
 
@@ -53,11 +53,11 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf(`{"user_id":"%s"}`, userID)))
 }
 
-func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
-	id := r.URL.Query().Get("uuid")
+	uuid := params.ByName("uuid")
 
-	user, err := h.service.GetUserByID(r.Context(), id)
+	user, err := h.service.GetUserByID(r.Context(), uuid)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(fmt.Sprintf(`{"message":"%s"}`, err.Error())))
