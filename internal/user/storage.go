@@ -16,6 +16,7 @@ func NewStorage(client postgresql.Client) *Storage {
 }
 
 func (s *Storage) InsertUser(ctx context.Context, user *User) (string, error) {
+
 	return "", nil
 }
 
