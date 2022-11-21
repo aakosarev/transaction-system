@@ -34,9 +34,11 @@ func main() {
 	userStorage := user.NewStorage(pgClient)
 	userService := user.NewService(userStorage)
 	userHandler := user.NewHandler(userService)
+	worker := user.NewWorker(userService)
 
 	userHandler.Register(router)
 
+	worker.StartTransactionProcessing(ctx)
 	start(router, cfg)
 }
 

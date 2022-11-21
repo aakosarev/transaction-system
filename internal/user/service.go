@@ -1,11 +1,19 @@
 package user
 
-import "context"
+import (
+	"context"
+	"log"
+	"time"
+)
 
 type storage interface {
 	InsertUser(ctx context.Context, user *User) (string, error)
 	FindUser(ctx context.Context, id string) (*User, error)
 	InsertTransaction(ctx context.Context, trr *TransactionRequest) error
+	HandleOneTransaction(ctx context.Context, tr *UserTransaction, u *User) error
+	FindOpenTransactionsForUser(ctx context.Context, u *User) ([]*UserTransaction, error)
+	FindAllUsers(ctx context.Context) ([]*User, error)
+	GetUserBalance(ctx context.Context, userID string) (int, error)
 }
 
 type Service struct {
@@ -38,4 +46,33 @@ func (s *Service) MakeTransaction(ctx context.Context, trr *TransactionRequest) 
 		return err
 	}
 	return nil
+}
+
+func (s *Service) HandleTransactions(ctx context.Context, user *User) {
+	for {
+		openTransactions, err := s.storage.FindOpenTransactionsForUser(ctx, user)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, openTransaction := range openTransactions {
+			err = s.storage.HandleOneTransaction(ctx, openTransaction, user)
+			if err != nil {
+				log.Fatal(err)
+			}
+			newBalance, err := s.storage.GetUserBalance(ctx, user.ID)
+			if err != nil {
+				log.Fatal(err)
+			}
+			user.Balance = newBalance
+			time.Sleep(5 * time.Second)
+		}
+	}
+}
+
+func (s *Service) GetAllUsers(ctx context.Context) ([]*User, error) {
+	users, err := s.storage.FindAllUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }

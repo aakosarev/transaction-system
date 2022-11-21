@@ -1,5 +1,7 @@
 package user
 
+import "time"
+
 type User struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
@@ -13,10 +15,10 @@ type TransactionRequest struct {
 }
 
 type UserTransaction struct {
-	ID        string `json:"id"`
-	UserID    string `json:"user_id"`
-	Type      string `json:"type"`
-	Status    string `json:"status"`
-	Amount    int    `json:"amount"`
-	CreatedAt string `json:"created_at"`
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	Type      string    `json:"type"`
+	Status    string    `json:"status"`
+	Amount    int       `json:"amount"`
+	CreatedAt time.Time `json:"created_at"`
 }

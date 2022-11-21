@@ -15,6 +15,8 @@ type service interface {
 	CreateUser(ctx context.Context, user *User) (string, error)
 	GetUserByID(ctx context.Context, id string) (*User, error)
 	MakeTransaction(ctx context.Context, trr *TransactionRequest) error
+	HandleTransactions(ctx context.Context, user *User)
+	GetAllUsers(ctx context.Context) ([]*User, error)
 }
 
 type Handler struct {
