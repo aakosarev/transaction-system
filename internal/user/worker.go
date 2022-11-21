@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"log"
 )
 
@@ -21,10 +20,9 @@ func NewWorker(service service) *Worker {
 func (w *Worker) StartTransactionProcessing(ctx context.Context) {
 	_users, err := w.service.GetAllUsers(ctx)
 	if err != nil {
-		log.Fatal("here _1", err)
+		log.Fatal(err)
 	}
 	for _, user := range _users {
-		fmt.Println("q", user)
 		go w.service.HandleTransactions(ctx, user)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
+	"log"
 	"net/http"
 )
 
@@ -53,6 +54,13 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf(`{"user_id":"%s"}`, userID)))
+
+	ctx := context.Background()
+	userForTransaction, err := h.service.GetUserByID(ctx, userID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go h.service.HandleTransactions(ctx, userForTransaction)
 }
 
 func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
