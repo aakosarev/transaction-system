@@ -6,6 +6,9 @@ import (
 	"github.com/aakosarev/transaction-system/internal/config"
 	"github.com/aakosarev/transaction-system/internal/user"
 	"github.com/aakosarev/transaction-system/pkg/client/postgresql"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net"
@@ -38,6 +41,9 @@ func main() {
 
 	userHandler.Register(router)
 
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", pgConfig.Username, pgConfig.Password, pgConfig.Host, pgConfig.Port, pgConfig.Database)
+	runDBMigrations("file://migrations", dsn)
+
 	worker.StartTransactionProcessing(ctx)
 	start(router, cfg)
 }
@@ -59,4 +65,17 @@ func start(router http.Handler, cfg *config.Config) {
 	if err := server.Serve(listener); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func runDBMigrations(migrationsURL string, databaseURL string) {
+	migrations, err := migrate.New(migrationsURL, databaseURL)
+	if err != nil {
+		log.Fatal("cannot create new migrate instance: ", err)
+	}
+
+	if err = migrations.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("failed to run migrate up: ", err)
+	}
+
+	log.Println("db migrated successfully")
 }

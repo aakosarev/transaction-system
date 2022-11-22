@@ -40,7 +40,7 @@ func NewPgConfig(username string, password string, host string, port string, dat
 
 func NewClient(ctx context.Context, maxAttempts int, maxDelay time.Duration, cfg *pgConfig) (pool *pgxpool.Pool, err error) {
 	dsn := fmt.Sprintf(
-		"postgresql://%s:%s@%s:%s/%s",
+		"postgresql://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.Username, cfg.Password,
 		cfg.Host, cfg.Port, cfg.Database,
 	)

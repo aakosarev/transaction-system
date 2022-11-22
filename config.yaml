@@ -6,5 +6,5 @@ postgresql:
   username: postgres
   password: postgres
   database: transaction_system
-  host: 0.0.0.0
+  host: postgres
   port: 5432
